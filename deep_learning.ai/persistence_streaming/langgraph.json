@@ -1,0 +1,12 @@
+{
+    "dependencies": [
+      ".",
+      "langchain",
+      "langchain-openai",
+      "python-dotenv"
+    ],
+    "graphs": {
+      "agent": "./main.py:abot"
+    },
+    "env": ".env"
+  }

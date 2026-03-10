@@ -1,0 +1,18 @@
+---
+config:
+  flowchart:
+    curve: linear
+id: 3ed0a94f-1cb8-4ddc-9cd8-ade905b7400d
+---
+graph TD;
+        __start__([<p>__start__</p>]):::first
+        llm(llm)
+        action(action)
+        __end__([<p>__end__</p>]):::last
+        __start__ --> llm;
+        action --> llm;
+        llm -. &nbsp;False&nbsp; .-> __end__;
+        llm -. &nbsp;True&nbsp; .-> action;
+        classDef default fill:#f2f0ff,line-height:1.2
+        classDef first fill-opacity:0
+        classDef last fill:#bfb6fc
