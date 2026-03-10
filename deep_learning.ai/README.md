@@ -57,6 +57,8 @@ LANGSMITH_PROJECT=deep-learning-ai.lessons
 
 ## Usage
 
+### Run as a script
+
 ```bash
 python main.py
 ```
@@ -65,6 +67,26 @@ The script runs three example queries:
 1. Current weather in San Francisco
 2. Current weather in SF and LA (parallel tool calls)
 3. Multi-hop research: Super Bowl 2024 winner → team state → state GDP
+
+### Run with LangGraph dev server
+
+```bash
+uv run --active langgraph dev
+```
+
+This starts the LangGraph Studio UI locally, allowing you to inspect and interact with the graph visually.
+
+The graph is configured in `langgraph.json`:
+
+```json
+{
+  "graphs": {
+    "agent": "./main.py:abot"
+  }
+}
+```
+
+`abot` is a module-level variable holding the compiled `StateGraph`. LangGraph's dev server imports the module and looks up the variable by name directly — it must be a `CompiledGraph` (or a factory function returning one) at the top level of the file.
 
 ## Notes
 
