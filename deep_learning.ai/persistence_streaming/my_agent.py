@@ -4,8 +4,21 @@ from langchain_core.messages import SystemMessage, ToolMessage
 
 
 class Agent:
+    """ The agent class is a wrapper around the LangGraph StateGraph class.
+    It is used to create a graph of nodes and edges that represent the agent's behavior.
+    The agent class is initialized with a model, tools, and system.
+    The model is a LangChain model that is used to generate responses.
+    The tools are a list of tools that the agent can use to interact with the world.
+    The system is a string that is used to set the system prompt for the agent.
+    This will have a memory component that will be used to store the agent's history.
 
-    def __init__(self, model, tools, system=""):
+    Agent Constructor Parameters:
+    - model: A LangChain model that is used to generate responses.
+    - tools: A list of tools that the agent can use to interact with the world.
+    - checkpointer: A checkpointer that is used to store the agent's history.
+    - system: A string that is used to set the system prompt for the agent.
+    """
+    def __init__(self, model, tools, checkpointer, system=""):
         self.system = system
         graph = StateGraph(AgentState)
         graph.add_node("llm", self.call_openai)
@@ -17,7 +30,9 @@ class Agent:
         )
         graph.add_edge("action", "llm")
         graph.set_entry_point("llm")
-        self.graph = graph.compile()
+
+        # compile the graph with the checkpointer
+        self.graph = graph.compile(checkpointer=checkpointer)
         self.tools = {t.name: t for t in tools}
         self.model = model.bind_tools(tools)
 
