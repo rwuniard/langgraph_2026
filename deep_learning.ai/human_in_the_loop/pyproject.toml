@@ -1,0 +1,14 @@
+[project]
+name = "human-in-the-loop"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "langchain-community>=0.4.1",
+    "langchain-core>=1.2.18",
+    "langchain-openai>=1.1.11",
+    "langgraph>=1.1.0",
+    "langgraph-checkpoint-sqlite>=3.0.3",
+    "langgraph-cli[inmem]>=0.4.15",
+]
