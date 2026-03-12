@@ -35,35 +35,15 @@ def main():
     with SqliteSaver.from_conn_string(":memory:") as memory:
         abot = Agent(model, [tool], checkpointer=memory, system=prompt).graph
 
-
         thread = {"configurable": {"thread_id": "123"}}
-
-        messages = [HumanMessage(content="What is the weather in sf?")]
-        result = abot.invoke({"messages": messages}, config=thread)
-
-        print(result)
-        print(result['messages'][-1].content)
-
-        messages = [HumanMessage(content="What is the weather in SF and LA?")]
-        result = abot.invoke({"messages": messages}, config=thread)
-        print(result)
-        print(result['messages'][-1].content)
-
-        # Note, the query was modified to produce more consistent results.
-        # Results may vary per run and over time as search information and models change.
-        query = "Who won the super bowl in 2024? In what state is the winning team headquarters located? What is the GDP of that state? Answer each question."
-        messages = [HumanMessage(content=query)]
-        result = abot.invoke({"messages": messages}, config=thread)
-        print(result)
-        print(result['messages'][-1].content)
-
-        # print the graph in mermaid format
-        #print(abot.get_graph().draw_mermaid())
-        
         # Using stream
-        messages = [HumanMessage(content="What is the weather in atl?")]
+        messages = [HumanMessage(content="What is the weather in ATL?")]
+        print("Streaming...")
         for chunk in abot.stream({"messages": messages}, config=thread):
-            print(chunk)
+            for node, values in chunk.items():
+                print(f"{node}:")
+                for msg in values['messages']:
+                    msg.pretty_print()
 
 
 
