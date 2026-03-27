@@ -8,6 +8,7 @@ A LangGraph-based ReAct agent built as part of the DeepLearning.AI course. The a
 human_in_the_loop_and_modify_state/
 ├── main_with_stream.py         # Human-in-the-loop demo with user confirmation prompt
 ├── main_modifystate_example.py # State modification demo: redirect a tool call mid-execution
+├── main_time_travel.py         # Time travel demo: replay from a past checkpoint
 ├── my_agent.py                 # Agent class with interrupt_before=["action"]
 ├── agent_state.py              # AgentState TypedDict using add_messages reducer
 ├── .env                        # API keys (not committed)
@@ -81,6 +82,27 @@ for event in abot.stream(None, thread):
 ```
 
 The tool call `id` must be preserved so LangGraph can correctly associate the `ToolMessage` response.
+
+### Time Travel
+
+Because the checkpointer records every state snapshot, you can replay the graph from any prior checkpoint. `main_time_travel.py` shows this pattern:
+
+```python
+# Collect the full state history (newest → oldest)
+states = []
+for state in abot.get_state_history(thread):
+    states.append(state)
+
+# Pick a past checkpoint (e.g. the 4th most recent)
+replay_state = states[3]
+
+# Resume from that checkpoint — graph re-executes from that point forward
+for event in abot.stream(None, replay_state.config):
+    for v in event.items():
+        print(f"Values: {v}")
+```
+
+`get_state_history()` returns snapshots in reverse chronological order (`states[0]` is the most recent, `states[-1]` is the oldest). Passing `replay_state.config` (which contains the checkpoint `id`) tells LangGraph exactly which snapshot to resume from.
 
 ### AgentState and `add_messages`
 
@@ -166,6 +188,12 @@ python main_with_stream.py
 
 ```bash
 python main_modifystate_example.py
+```
+
+**Time travel demo** — runs two weather queries (SF then NYC), collects the full state history, then replays from a specific past checkpoint:
+
+```bash
+python main_time_travel.py
 ```
 
 ## Notes

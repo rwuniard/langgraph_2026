@@ -6,10 +6,11 @@ A LangGraph-based ReAct agent built as part of the DeepLearning.AI course. The a
 
 ```
 persistence_streaming/
-├── main.py          # Entry point, agent usage examples
-├── my_agent.py      # Agent class with LangGraph graph definition
-├── agent_state.py   # AgentState TypedDict definition
-├── .env             # API keys (not committed)
+├── main.py               # Multi-query examples with persistence and streaming
+├── main_with_stream.py   # Focused streaming example using pretty_print output
+├── my_agent.py           # Agent class with LangGraph graph definition
+├── agent_state.py        # AgentState TypedDict definition
+├── .env                  # API keys (not committed)
 └── README.md
 ```
 
@@ -104,16 +105,36 @@ LANGSMITH_PROJECT=deep-learning-ai.lessons
 
 ## Usage
 
+### `main.py` — Multi-query persistence examples
+
 ```bash
 python main.py
 ```
 
-The script runs four example queries using the same `thread_id`, so the agent accumulates conversation history across all of them:
+Runs four example queries using the same `thread_id`, so the agent accumulates conversation history across all of them:
 
 1. Current weather in San Francisco
 2. Current weather in SF and LA (parallel tool calls)
 3. Multi-hop research: Super Bowl 2024 winner → team state → state GDP
 4. Current weather in Atlanta (streamed output)
+
+### `main_with_stream.py` — Focused streaming example
+
+```bash
+python main_with_stream.py
+```
+
+Asks a single query ("What is the weather in ATL?") and streams the response, printing each node's messages using LangChain's `pretty_print()`:
+
+```python
+for chunk in abot.stream({"messages": messages}, config=thread):
+    for node, values in chunk.items():
+        print(f"{node}:")
+        for msg in values['messages']:
+            msg.pretty_print()
+```
+
+This gives a clean, formatted view of every message produced at each graph node (`llm` and `action`) as the agent reasons through the query.
 
 ## Notes
 
